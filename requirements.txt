@@ -4,3 +4,5 @@ plotly
 openpyxl
 Pillow
 streamlit-paste-button
+google-generativeai
+numpy
