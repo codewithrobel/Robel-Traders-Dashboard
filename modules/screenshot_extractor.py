@@ -26,6 +26,8 @@ class ScreenshotExtractor:
             raise ImportError("Required image libraries are not installed")
 
         api_key = os.getenv("GEMINI_API_KEY")
+        print(f"Gemini key found: {bool(api_key)}")
+        print(f"GenAI available: {genai is not None}")
 
         if api_key and genai is not None:
             try:
@@ -104,7 +106,9 @@ Rules:
                     }
                 ])
             except Exception as e:
+                import traceback
                 print(f"Gemini extraction error: {e}")
+                traceback.print_exc()
 
         if pytesseract is None:
             return pd.DataFrame([
