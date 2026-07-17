@@ -500,7 +500,7 @@ if menu == "📈 Analytics Dashboard":
     col1.metric("Total Products", len(df))
     col2.metric("Best Score", round(df["Score"].max(), 1))
     col3.metric("Average Rating", round(df["Rating"].mean(), 2))
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(df, width='stretch', hide_index=True)
 
     render_winners(df)
 
@@ -510,17 +510,17 @@ if menu == "📈 Analytics Dashboard":
     st.subheader("📊 Top 10 Products by Score")
     fig1 = px.bar(df.head(10), x="ProductCode", y="Score", title="Top Products by Score")
     fig1.update_layout(template="plotly_dark")
-    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig1, width='stretch')
 
     st.subheader("⭐ Rating Distribution")
     fig2 = px.pie(df, names="ProductCode", values="Reviews", title="Reviews Distribution")
     fig2.update_layout(template="plotly_dark")
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width='stretch')
 
     st.subheader("📝 Reviews Distribution")
     fig3 = px.line(df, x="ProductCode", y="Rating", title="Rating Trend", markers=True)
     fig3.update_layout(template="plotly_dark")
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3, width='stretch')
 
     st.divider()
     st.caption("© 2026 Robel Traders | Version 2.0 Enterprise | Developed by Priyanshu Singh")
@@ -555,7 +555,7 @@ if menu == "🔍 Research Center":
 
             st.success(f"Research completed for: {keyword}")
             st.write(f"Collected Products: {len(result_df)}")
-            st.dataframe(result_df, use_container_width=True)
+            st.dataframe(result_df, width='stretch')
 
     paste_result = paste_image_button("📋 Paste Screenshot (Cmd+V)")
 
@@ -570,7 +570,7 @@ if menu == "🔍 Research Center":
 
     if uploaded_images:
         st.write(f"📸 {len(uploaded_images)} image(s) selected")
-        st.image(uploaded_images[0], caption="Preview", use_container_width=True)
+        st.image(uploaded_images[0], caption="Preview", width='stretch')
     if st.button("📸 Extract Screenshot Data"):
         if not uploaded_images:
             st.warning("Upload at least one screenshot first")
@@ -609,7 +609,7 @@ if menu == "🔍 Research Center":
                 save_products(final_df)
 
                 st.success(f"✅ {len(all_results)} screenshot(s) processed and saved")
-                st.dataframe(final_df.tail(len(all_results)), use_container_width=True)
+                st.dataframe(final_df.tail(len(all_results)), width='stretch')
                 st.toast("💾 Bulk save completed", icon="✅")
             else:
                 st.error("No product data could be extracted")
@@ -625,7 +625,7 @@ if menu == "🔍 Research Center":
             if result_df is not None and not result_df.empty:
                 save_products(result_df)
                 st.success(f"✅ Product URL analyzed and saved ({len(result_df)} record)")
-                st.dataframe(result_df, use_container_width=True)
+                st.dataframe(result_df, width='stretch')
             else:
                 st.error("No data was returned from the product URL")
 
