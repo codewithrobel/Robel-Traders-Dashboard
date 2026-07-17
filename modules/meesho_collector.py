@@ -1,11 +1,10 @@
-
-
 import pandas as pd
 from datetime import datetime
 from utils.data_manager import save_products
 import os
 import json
 import requests
+import streamlit as st
 import google.generativeai as genai
 
 
@@ -54,10 +53,16 @@ class MeeshoCollector:
             api_key = os.getenv("GEMINI_API_KEY")
 
             if not api_key:
+                try:
+                    api_key = st.secrets.get("GEMINI_API_KEY")
+                except Exception:
+                    api_key = None
+
+            if not api_key:
                 return pd.DataFrame([
                     {
                         "ProductCode": "URL-NO-KEY",
-                        "ProductName": "Gemini API Key Missing",
+                        "ProductName": "Gemini API Key Missing (add GEMINI_API_KEY in Streamlit Secrets)",
                         "Price": 0,
                         "Reviews": 0,
                         "Rating": 0,
@@ -75,11 +80,21 @@ class MeeshoCollector:
             )
 
             result = model.generate_content([prompt, html])
+            if not hasattr(result, "text") or not result.text:
+                raise ValueError("Gemini returned empty response")
 
             text = result.text.strip()
             text = text.replace("```json", "").replace("```", "")
 
-            data = json.loads(text)
+            try:
+                data = json.loads(text)
+            except Exception:
+                start = text.find("{")
+                end = text.rfind("}")
+                if start != -1 and end != -1:
+                    data = json.loads(text[start:end + 1])
+                else:
+                    raise ValueError(f"Gemini returned invalid JSON: {text[:200]}")
 
             price = float(data.get("price") or 0)
             rating = float(data.get("rating") or 0)
