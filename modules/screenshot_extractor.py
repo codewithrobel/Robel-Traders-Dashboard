@@ -43,8 +43,11 @@ Rules:
 - Extract price as a number only.
 - Extract rating as a number only.
 - Extract reviews as a number only.
-- Extract product_id from the screenshot if visible.
-- If product_id is not visible, generate a short unique id.
+- Extract product_id only if it is clearly visible in the screenshot.
+- If product_id is not visible, return null for product_id.
+- Extract the selling price from the product card.
+- Never invent a product_id.
+- Never return random strings such as ao6lz6.
 - Never return 0 for price unless the screenshot clearly shows 0.
 - If a value is missing, return null.
 
@@ -84,7 +87,7 @@ Rules:
 
                 product_id = str(data.get("product_id", "")).strip()
 
-                if product_id:
+                if product_id and product_id.lower() != "null":
                     product_code = f"RT-{product_id}"
                 else:
                     product_code = f"RT-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -100,8 +103,8 @@ Rules:
                         "Source": "Gemini"
                     }
                 ])
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"Gemini extraction error: {e}")
 
         if pytesseract is None:
             return pd.DataFrame([
