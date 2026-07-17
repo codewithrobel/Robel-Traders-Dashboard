@@ -5,12 +5,19 @@ import os
 import json
 
 try:
-    import pytesseract
     from PIL import Image, ImageEnhance, ImageFilter
+except ImportError:
+    Image = None
+
+try:
     import google.generativeai as genai
 except ImportError:
+    genai = None
+
+try:
+    import pytesseract
+except ImportError:
     pytesseract = None
-    Image = None
 
 
 class ScreenshotExtractor:
@@ -20,7 +27,7 @@ class ScreenshotExtractor:
 
         api_key = os.getenv("GEMINI_API_KEY")
 
-        if api_key:
+        if api_key and genai is not None:
             try:
                 genai.configure(api_key=api_key)
                 model = genai.GenerativeModel("gemini-2.5-flash")
@@ -96,6 +103,18 @@ Rules:
             except Exception:
                 pass
 
+        if pytesseract is None:
+            return pd.DataFrame([
+                {
+                    "ProductCode": f"RT-{datetime.now().strftime('%Y%m%d%H%M%S')}",
+                    "ProductName": "Image Processed",
+                    "Price": 0,
+                    "Reviews": 0,
+                    "Rating": 0,
+                    "Score": 0,
+                    "Source": "Screenshot"
+                }
+            ])
         image = Image.open(image_path)
         image = image.convert('L')
         image = ImageEnhance.Contrast(image).enhance(2.0)
